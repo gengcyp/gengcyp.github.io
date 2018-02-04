@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Quiz Game</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href="https://fonts.googleapis.com/css?family=Itim" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function (){
+			$("#play").hide();
+			$("#end").hide();
+
+			$("#start10").click(function(){
+				$("#pre").hide();
+				$("#play").show();
+				playgame(10);
+				start_Time = new Date().getTime();
+			})
+			$("#start20").click(function(){
+				$("#pre").hide();
+				$("#play").show();
+				playgame(20);
+				start_Time = new Date().getTime();
+			})
+
+		});
+		var start_Time,end_Time;
+		var gameData = [];	//read json
+		var totalScore = 0;
+		var totalCorrect = 0;
+		var numbers = [];
+		
+		function playgame(remainingRound) {
+			
+			
+			$.ajax({		//get data from json
+				url:'quiz.json',
+				//method:'GET',
+				async: false,
+				dataType: 'text',
+				success: function(data){
+					gameData = JSON.parse(data);
+				}
+			});
+			
+			//RANDOM QUESTION ++++++++++++++++++++++
+			for (var i=0;i<gameData.length;i++){
+				numbers.push(i);
+			}
+			var random = shuffle(numbers);
+			numbers = random.slice(0,remainingRound);
+			//--------------------------------------
+			loopGame(remainingRound);
+
+		}//end function playgame
+		var secs = 15;
+		var correct = 0;
+		var score = 0;
+		var picQuestion ="";
+		var round_checkAns ;
+		function loopGame(remainingRound){
+			
+			round_checkAns = 1;
+			score = 0;
+			correct = 0;
+			var i=numbers[remainingRound-1];
+		//load question
+			correct = gameData[i].co;
+			score = gameData[i].sc;
+				
+			$("#c1").text(gameData[i].c1);
+			$("#c2").text(gameData[i].c2);
+			$("#c3").text(gameData[i].c3);
+			$("#c4").text(gameData[i].c4);
+			picQuestion = gameData[i].pic;
+			if (picQuestion != ""){
+				$('#q').html('<img width="600" height="400" src="'+picQuestion+'" />')
+				$('#q').append('<br>');
+			}else {$('#q').html("");}
+			$("#q").append(gameData[i].q);
+			$("#remaining-question").text(remainingRound-1);
+			$("#correct").text(totalCorrect);
+				
+			//count down +++++++++++++++++++++
+			progress(secs, remainingRound, $('#progress'));
+			//--------------------------------
+				
+		}
+		function progress(timeleft, nextRound, $element) {
+			$("#time-left").text(timeleft%60);
+			//check click answer
+			$("#c1").click( function() {
+				checkAns(1,nextRound,timeleft);
+				timeleft = 0;
+			});
+			$("#c2").click( function() {
+				checkAns(2,nextRound,timeleft);
+				timeleft = 0;
+			});
+			$("#c3").click( function() {
+				checkAns(3,nextRound,timeleft);
+				timeleft = 0;
+			});
+			$("#c4").click( function() {
+				checkAns(4,nextRound,timeleft);
+				timeleft = 0;
+				
+			});
+			
+			
+		    if(timeleft > 0) {
+		        setTimeout(function() {
+		            progress(timeleft - 1, nextRound, $element);
+		        }, 1000);
+		    }else{
+				if (nextRound>1 ){
+					nextRound--;
+					loopGame(nextRound);
+				}else{
+					endGame();
+				}
+		    }
+		};
+		function checkAns(ans,nextRound,timeleft){
+			if ((correct == ans) && (round_checkAns == 1)){
+				totalScore += score;
+				totalCorrect ++;
+				colorAns('#c'+ans,'#00ff00');
+			}else if ((correct != ans) && (round_checkAns == 1)){
+				colorAns('#c'+ans,'red');
+			}
+			round_checkAns=0;
+			$("#remaining-question").text(nextRound-2);
+			$("#correct").text(totalCorrect);
+			
+		}
+		function endGame(){
+			end_Time = new Date().getTime();
+			$("#play").hide();
+			$("#end").show();
+			$("#totalCorrect").text(totalCorrect+" / "+numbers.length);
+			$("#totalTime").text(((end_Time-start_Time)/1000)+" Secs");
+			$("#gotoHome").click(function (){
+				$("#pre").show();
+				$("#end").hide();
+			});
+			totalScore = 0;
+			totalCorrect = 0;
+			numbers = [];
+		}
+		function shuffle(o) {
+    		for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    		return o;
+		}
+		function mouseOver(ele) {
+			$(ele).css('color','#ffcc00');
+		}
+		function mouseOut(ele) {
+			$(ele).css('color','white');
+		}
+		var colorFont = "black";
+		var colorBG = "white";
+		function mouseOver2(ele) {
+			colorFont = $(ele).css('color');
+			colorBG= $(ele).css('background-color');
+			$(ele).css('color','#36486b');
+			$(ele).css('background-color','#ffef96');
+		}
+		function mouseOut2(ele) {
+			$(ele).css('color',colorFont);
+			$(ele).css('background-color',colorBG);
+		}
+		function colorAns(ele,color) {
+			bk_color = $(ele).css('background-color');
+			$(ele).css('background-color',color);
+			setTimeout(function () {
+				$(ele).css('background-color',bk_color);;
+			},100);
+		}
+	</script>
+</head>
+<body>
+
+
+
+<div class="container">
+
+	
+	<section id="pre">
+		<h1>The Quiz</h1>
+		 	 <br><br>
+		<div id="start10" onmouseover="mouseOver2('#start10')" onmouseout="mouseOut2('#start10')">Start 10 Question</div>
+		<div id="start20" onmouseover="mouseOver2('#start20')" onmouseout="mouseOut2('#start20')">Start 20 Question</div>
+
+		<br>
+	</section>
+
+	<section id="play">
+
+		<div id="progress">
+  				<div class="bar"></div>
+		</div>
+		<div id="showquestion">
+			<div id="q"></div>
+			<div id="c1" onmouseover="mouseOver('#c1')" onmouseout="mouseOut('#c1')"></div>
+			<div id="c2" onmouseover="mouseOver('#c2')" onmouseout="mouseOut('#c2')"></div>
+			<div id="c3" onmouseover="mouseOver('#c3')" onmouseout="mouseOut('#c3')"></div>
+			<div id="c4" onmouseover="mouseOver('#c4')" onmouseout="mouseOut('#c4')"></div>
+			<div id="ct">
+				Time Left:
+				<div id="time-left" class="ctrlNumber"></div>
+				Q. Left:
+				<div id="remaining-question" class="ctrlNumber"></div>
+				Score:
+				<div id="correct" class="ctrlNumber"></div>
+			</div>
+		</div>
+	</section>
+
+	<section id="end">
+		<nav id="total">
+			Your Score:
+			<nav id="totalCorrect"></nav>
+			Total Time:
+			<nav id="totalTime"></nav>
+			<nav id="gotoHome" onmouseover="mouseOver2('#gotoHome')" onmouseout="mouseOut2('#gotoHome')">go to HOME</nav>
+		</nav>
+	</section>
+
+
+
+</div>
+
+
+
+
+
+</body>
+</html>

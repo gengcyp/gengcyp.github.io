@@ -1,0 +1,94 @@
+html {
+	font-family: 'Itim', cursive;
+	color:white;
+  background-color: #003300;
+}
+
+h1 {
+	text-align:center;
+	font-size:100px;
+	
+}
+#pre {
+	background-color:#lightblue;
+	
+}
+
+
+
+#c1 {grid-area: c1;}
+#c2 {grid-area: c2;}
+#c3 {grid-area: c3;}
+#c4 {grid-area: c4;}
+#ct {grid-area: ct;}
+#q 	{grid-area: qs;}
+
+#q {
+	font-size: 40px;
+	border-radius: 20px 20px 20px 20px;
+	background-color:MediumSeaGreen;
+	color:black;
+	width:100%;
+}
+#c1 {
+	border-radius: 50px 10px 10px 10px;
+}
+#c2 {
+	border-radius: 10px 50px 10px 10px;
+}
+#c3 {
+	border-radius: 10px 10px 10px 50px;
+}
+#c4 {
+	border-radius: 10px 10px 50px 10px;
+}
+
+#c1,#c2,#c3,#c4 {
+	font-size: 30px;
+	color:white;
+	width:100%;
+}
+
+
+#showquestion {
+  display: grid;
+  grid-template-areas:
+    'qs qs ct'
+    'c1 c2 ct'
+    'c3 c4 ct';
+  grid-gap: 10px;
+  background-color: #003300;
+  padding: 10px;
+  
+
+}
+#showquestion > div {
+  text-align: center;
+  padding: 10px 0;
+    border: 1px solid white;
+}
+#ct {
+	background-color:lightgreen;
+	color:black;
+	width:100px;
+}
+.ctrlNumber {
+	font-size:40pt ;
+}
+
+#total {
+	text-align: center;
+	font-size:40pt ;
+}
+#gotoHome {
+	border-radius: 10px;
+	border: 1px solid white;
+	margin:10px;
+}
+#start10,#start20 {
+	text-align: center;
+	font-size:40pt ;
+	border-radius: 10px;
+	border: 1px solid black;
+	margin:10px;
+}
